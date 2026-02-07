@@ -21,7 +21,7 @@ export async function GET() {
       status: msg.status || 'delivered',
       direction: msg.direction === 'inbound' ? 'inbound' : 'outbound-api',
       message_type: msg.message_type,
-      is_ai_response: msg.is_ai_response
+      is_ai_response: msg.is_ai_response || false
     }));
 
     console.log(`Fetched ${formattedMessages.length} messages`);

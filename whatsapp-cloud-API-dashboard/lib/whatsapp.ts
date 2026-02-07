@@ -72,9 +72,11 @@ export async function sendWhatsAppMessage(to: string, body: string, isAiResponse
 
   // Store the sent message in database
   const messageId = data.messages?.[0]?.id || `msg_${Date.now()}`;
-  const fromNumber = phoneNumberId;
+  const fromNumber = '254750589161'; // Your WhatsApp display phone number
 
-  await supabaseAdmin.from('messages').insert({
+  console.log('Storing outbound message:', { messageId, fromNumber, toNumber: cleanTo });
+
+  const { error: insertError } = await supabaseAdmin.from('messages').insert({
     message_id: messageId,
     phone_number: cleanTo,
     from_number: fromNumber,
@@ -87,6 +89,13 @@ export async function sendWhatsAppMessage(to: string, body: string, isAiResponse
     is_ai_response: isAiResponse,
     metadata: data
   });
+
+  if (insertError) {
+    console.error('Error storing outbound message:', insertError);
+    // Don't throw error - message was sent to WhatsApp, just log the issue
+  } else {
+    console.log('Outbound message stored successfully');
+  }
 
   return data;
 }

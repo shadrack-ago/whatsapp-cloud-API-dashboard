@@ -12,6 +12,7 @@ interface Message {
   date_sent: string;
   status: string;
   direction: string;
+  is_ai_response?: boolean;
 }
 
 interface Conversation {
@@ -261,12 +262,19 @@ export default function WhatsAppDashboard() {
   const isAIMessage = (message: Message, allMessages: Message[], index: number) => {
     if (message.direction !== 'outbound-api') return false;
     
+    // Use the actual is_ai_response field if available
+    if (message.is_ai_response !== undefined) {
+      return message.is_ai_response;
+    }
+    
+    // Fallback to timing-based detection for older messages
     const prevMessage = allMessages[index + 1];
     if (prevMessage && prevMessage.direction === 'inbound') {
       const responseTime = new Date(message.date_sent).getTime() - new Date(prevMessage.date_sent).getTime();
       return responseTime < 30000; // AI responds within 30 seconds
     }
-    return false;
+    
+    return false; // Default to human for business-initiated messages
   };
 
   const formatResponseTime = (ms: number) => {
