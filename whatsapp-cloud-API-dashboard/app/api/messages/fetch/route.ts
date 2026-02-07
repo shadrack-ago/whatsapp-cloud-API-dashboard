@@ -4,9 +4,12 @@ import { getMessages } from '@/lib/whatsapp';
 export async function GET() {
   try {
     console.log('Fetching messages from database...');
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('Service Key exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
     
     // Fetch all messages from Supabase
     const messages = await getMessages();
+    console.log('Raw messages from DB:', messages);
 
     // Transform to match the format expected by the frontend
     const formattedMessages = messages.map((msg: any) => ({
@@ -26,7 +29,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching messages:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch messages' },
+      { error: 'Failed to fetch messages', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
