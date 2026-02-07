@@ -1,5 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
+console.log('Environment variables check:');
+console.log('NEXT_PUBLIC_SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('SUPABASE_SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
@@ -88,6 +92,9 @@ export async function sendWhatsAppMessage(to: string, body: string, isAiResponse
 }
 
 export async function getMessages(phoneNumber?: string, limit: number = 1000) {
+  console.log('getMessages called with:', { phoneNumber, limit });
+  console.log('Supabase client initialized:', !!supabaseAdmin);
+  
   let query = supabaseAdmin
     .from('messages')
     .select('*')
@@ -99,6 +106,7 @@ export async function getMessages(phoneNumber?: string, limit: number = 1000) {
     query = query.eq('phone_number', cleanPhone);
   }
 
+  console.log('Executing query...');
   const { data, error } = await query;
 
   if (error) {
@@ -106,6 +114,7 @@ export async function getMessages(phoneNumber?: string, limit: number = 1000) {
     throw new Error('Failed to fetch messages from database');
   }
 
+  console.log('Query result:', { data: data?.length || 0, error: null });
   return data || [];
 }
 
