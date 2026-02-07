@@ -6,6 +6,7 @@ import LoginForm from '@/components/LoginForm';
 
 interface Message {
   sid: string;
+  phone_number?: string;
   from: string;
   to: string;
   body: string;
@@ -59,13 +60,15 @@ export default function WhatsAppDashboard() {
         throw new Error(data.error || 'Failed to fetch messages');
       }
 
-      // Group messages by phone number
+      // Group messages by phone number (customer's number)
       const messageGroups: { [key: string]: Message[] } = {};
       
       data.messages.forEach((message: Message) => {
-        const phoneNumber = message.direction === 'inbound' 
-          ? message.from.replace('whatsapp:', '') 
-          : message.to.replace('whatsapp:', '');
+        // Use phone_number field which always represents the customer
+        const phoneNumber = message.phone_number 
+          || (message.direction === 'inbound' 
+            ? message.from.replace('whatsapp:', '') 
+            : message.to.replace('whatsapp:', ''));
         
         if (!messageGroups[phoneNumber]) {
           messageGroups[phoneNumber] = [];

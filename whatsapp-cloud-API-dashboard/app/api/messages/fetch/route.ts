@@ -14,8 +14,9 @@ export async function GET() {
     // Transform to match the format expected by the frontend
     const formattedMessages = messages.map((msg: any) => ({
       sid: msg.message_id,
-      from: msg.direction === 'inbound' ? msg.from_number : msg.to_number,
-      to: msg.direction === 'inbound' ? msg.to_number : msg.from_number,
+      phone_number: msg.phone_number,
+      from: msg.from_number,
+      to: msg.to_number,
       body: msg.body || '',
       date_sent: msg.timestamp,
       status: msg.status || 'delivered',
